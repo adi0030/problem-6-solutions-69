@@ -1,0 +1,30 @@
+{
+  "name": "social-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "build": "next build",
+    "start": "node server.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "next-auth": "4.24.7",
+    "jsonwebtoken": "9.0.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "socket.io-client": "4.7.5",
+    "swr": "2.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.12",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@types/jsonwebtoken": "9.0.6",
+    "autoprefixer": "10.4.19",
+    "postcss": "8.4.38",
+    "tailwindcss": "3.4.4",
+    "typescript": "5.4.5"
+  }
+}

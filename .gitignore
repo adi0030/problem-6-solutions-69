@@ -1,8 +1,14 @@
-# Nestjs specific
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
 /dist
-/node_modules
 /build
 /tmp
+.next/
+out/
 
 # Logs
 logs
@@ -11,14 +17,26 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 
-# dotenv environment variable files
+# Env files (NEVER commit)
 .env
+.env.local
 .env.development
 .env.test
 .env.production
 
-# temp directory
+# Docker volumes / local data
+/data
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Temp
 .temp
 .tmp
+
+# Coverage
+coverage/
