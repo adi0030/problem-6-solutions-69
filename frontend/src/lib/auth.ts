@@ -15,9 +15,13 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ profile }) {
-      if (!profile?.email) return false;
+      if (!profile?.email) {
+        console.error('[auth.signIn] profile.email missing');
+        return false;
+      }
+      const url = `${BACKEND_URL}/api/users/sync`;
       try {
-        const r = await fetch(`${BACKEND_URL}/api/users/sync`, {
+        const r = await fetch(url, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -29,8 +33,14 @@ export const authOptions: NextAuthOptions = {
             displayName: profile.name || profile.email.split('@')[0],
           }),
         });
-        return r.ok;
-      } catch {
+        if (!r.ok) {
+          const txt = await r.text().catch(() => '');
+          console.error(`[auth.signIn] backend sync ${r.status} from ${url}: ${txt}`);
+          return false;
+        }
+        return true;
+      } catch (e: any) {
+        console.error(`[auth.signIn] fetch failed for ${url}:`, e.code || e.message);
         return false;
       }
     },
@@ -58,9 +68,11 @@ export const authOptions: NextAuthOptions = {
             token.userId = user.id;
             token.handle = user.handle;
             token.sub = user.id;
+          } else {
+            console.error(`[auth.jwt] sync ${r.status}`);
           }
-        } catch {
-          /* leave token alone */
+        } catch (e: any) {
+          console.error('[auth.jwt] sync fetch failed:', e.code || e.message);
         }
       }
       return token;
