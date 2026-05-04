@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { apiJson } from '@/lib/api';
 import { avatarFor } from '@/lib/avatar';
+import { Heart, MessageCircle, Share, MoreHorizontal } from 'lucide-react';
 
 export type PostT = {
   id: string;
@@ -69,54 +70,63 @@ export default function PostCard({ post, onChange }: { post: PostT; onChange?: (
   }
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-      <header className="mb-3 flex items-center gap-3">
-        <Link href={`/u/${post.author.handle}`}>
-          <img src={avatarFor(post.author)} alt="" className="h-10 w-10 rounded-full" />
-        </Link>
-        <div className="min-w-0">
-          <Link href={`/u/${post.author.handle}`} className="block truncate text-sm font-semibold hover:underline">
-            {post.author.displayName}
+    <article className="group overflow-hidden rounded-3xl border border-slate-200/60 bg-white p-5 shadow-soft transition-all hover:shadow-soft-lg dark:border-slate-800/60 dark:bg-slate-900/50">
+      <header className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link href={`/u/${post.author.handle}`}>
+            <img src={avatarFor(post.author)} alt="" className="h-11 w-11 rounded-full object-cover ring-2 ring-transparent transition-all group-hover:ring-rose-100 dark:group-hover:ring-rose-900/30" />
           </Link>
-          <div className="text-xs text-slate-500">@{post.author.handle} · {timeAgo(post.createdAt)}</div>
+          <div className="min-w-0">
+            <Link href={`/u/${post.author.handle}`} className="block truncate text-sm font-bold text-slate-900 hover:underline dark:text-slate-100">
+              {post.author.displayName}
+            </Link>
+            <div className="text-[13px] font-medium text-slate-500">@{post.author.handle} · {timeAgo(post.createdAt)}</div>
+          </div>
         </div>
+        <button type="button" className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300">
+          <MoreHorizontal className="h-5 w-5" />
+        </button>
       </header>
       <Link href={`/p/${post.id}`} className="block">
-        <p className="whitespace-pre-wrap break-words text-sm">{post.body}</p>
+        <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">
+          {post.body}
+        </p>
         {post.imageUrl && (
-          <img
-            src={post.imageUrl}
-            alt=""
-            className="mt-3 max-h-96 w-full rounded-lg border border-slate-200 object-cover dark:border-slate-800"
-          />
+          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-50 dark:border-slate-800/60 dark:bg-slate-900/80">
+            <img
+              src={post.imageUrl}
+              alt=""
+              className="max-h-[32rem] w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
         )}
       </Link>
-      <footer className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+      <footer className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-4 text-[13px] font-medium text-slate-500 dark:border-slate-800/60">
         <button
           type="button"
           onClick={toggleLike}
           disabled={busy}
-          className={`flex items-center gap-1 rounded-full px-3 py-1 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 ${
-            post.likedByMe ? 'text-rose-600' : ''
+          className={`flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-rose-50 dark:hover:bg-rose-900/20 ${
+            post.likedByMe ? 'text-rose-600 dark:text-rose-500' : 'hover:text-rose-600 dark:hover:text-rose-400'
           }`}
         >
-          <span aria-hidden>{post.likedByMe ? '❤️' : '🤍'}</span>
-          <span>{post.likeCount}</span>
+          <Heart className={`h-5 w-5 ${post.likedByMe ? 'fill-current' : ''}`} />
+          <span>{post.likeCount > 0 ? post.likeCount : 'Like'}</span>
         </button>
         <Link
           href={`/p/${post.id}`}
-          className="flex items-center gap-1 rounded-full px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300"
         >
-          <span aria-hidden>💬</span>
-          <span>{post.commentCount}</span>
+          <MessageCircle className="h-5 w-5" />
+          <span>{post.commentCount > 0 ? post.commentCount : 'Comment'}</span>
         </Link>
         <button
           type="button"
           onClick={share}
-          className="ml-auto flex items-center gap-1 rounded-full px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="ml-auto flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300"
         >
-          <span aria-hidden>↗️</span>
-          <span>{shared ? 'Copied!' : post.shareCount}</span>
+          <Share className="h-5 w-5" />
+          <span>{shared ? 'Copied!' : post.shareCount > 0 ? post.shareCount : 'Share'}</span>
         </button>
       </footer>
     </article>
