@@ -21,7 +21,7 @@ import searchRouter from './routes/search.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '4000', 10);
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3002';
 
 const UPLOADS_ROOT = process.env.UPLOADS_DIR || '/app/uploads';
 fs.mkdirSync(UPLOADS_ROOT, { recursive: true });

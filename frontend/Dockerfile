@@ -15,7 +15,7 @@ FROM base AS dev
 ENV NODE_ENV=development
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-EXPOSE 3000
+EXPOSE 3002
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["npm", "run", "dev"]
 
@@ -36,8 +36,8 @@ COPY --from=builder --chown=app:app /app/.next/standalone ./
 COPY --from=builder --chown=app:app /app/.next/static ./.next/static
 COPY --from=builder --chown=app:app /app/public ./public
 USER app
-EXPOSE 3000
+EXPOSE 3002
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- http://localhost:3000/healthz || exit 1
+  CMD wget -qO- http://localhost:3002/healthz || exit 1
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "server.js"]

@@ -8,7 +8,7 @@ import { redis, subRedis } from './redis.js';
 import { isEmojiOnly } from './util/emoji.js';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || 'dev-secret';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3002';
 
 // Token-bucket rate limit: 30 messages / 10 seconds per user per conversation.
 async function rateLimitOk(userId, conversationId) {

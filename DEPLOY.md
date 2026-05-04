@@ -11,7 +11,7 @@ uploads. For HTTPS in real production, put Caddy or a Certbot sidecar in front
 - A domain pointed at the server's IP (A record)
 - A Google Cloud OAuth client (Web application) with:
   - Authorized redirect URI: `https://YOUR_DOMAIN/api/auth/callback/google`
-  - (Dev) `http://localhost:3000/api/auth/callback/google`
+  - (Dev) `http://localhost:3002/api/auth/callback/google`
 
 ## One-time setup
 

@@ -21,7 +21,7 @@ You need a Google OAuth client to log in.
 1. Go to [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
 2. Create an OAuth 2.0 Client ID (type: Web application).
 3. Authorized redirect URIs:
-   - Dev: `http://localhost:3000/api/auth/callback/google`
+   - Dev: `http://localhost:3002/api/auth/callback/google`
    - Prod: `https://YOUR_DOMAIN/api/auth/callback/google`
 4. Copy the client ID + secret into your `.env`.
 
@@ -42,7 +42,7 @@ echo "INTERNAL_API_TOKEN=$(openssl rand -hex 32)"
 
 Then open:
 
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:3002
 - Backend health: http://localhost:4000/api/health
 
 The backend container runs `prisma migrate deploy` on start. The first time
