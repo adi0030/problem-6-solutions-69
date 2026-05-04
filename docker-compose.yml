@@ -45,6 +45,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-social}:${POSTGRES_PASSWORD:-social_dev_password}@postgres:5432/${POSTGRES_DB:-social}
       NODE_ENV: development
       PORT: 4000
     volumes:
@@ -57,7 +58,7 @@ services:
       postgres:
         condition: service_healthy
       # redis:
-      #   condition: service_healthy
+        # condition: service_healthy
 
   frontend:
     build:
