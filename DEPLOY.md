@@ -11,7 +11,7 @@ uploads. For HTTPS in real production, put Caddy or a Certbot sidecar in front
 - A domain pointed at the server's IP (A record)
 - A Google Cloud OAuth client (Web application) with:
   - Authorized redirect URI: `https://YOUR_DOMAIN/api/auth/callback/google`
-  - (Dev) `http://localhost:3000/api/auth/callback/google`
+  - (Dev) `http://localhost:3002/api/auth/callback/google`
 
 ## One-time setup
 
@@ -27,7 +27,7 @@ Edit `.env.production` and set, at minimum:
 POSTGRES_USER=social
 POSTGRES_PASSWORD=<long random>
 POSTGRES_DB=social
-DATABASE_URL=postgresql://social:<long random>@postgres:5432/social
+DATABASE_URL=postgresql://social:<long random>@postgres:5436/social
 REDIS_URL=redis://redis:6379
 
 FRONTEND_URL=https://YOUR_DOMAIN

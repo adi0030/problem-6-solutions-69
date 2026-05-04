@@ -40,3 +40,5 @@ yarn-error.log*
 
 # Coverage
 coverage/
+frontend/node_modules.preoverride/
+frontend/node_modules.preoverride/*

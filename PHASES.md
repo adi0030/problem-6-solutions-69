@@ -55,7 +55,7 @@ The default is chosen deterministically by `hash(userId) % 12` so the same user 
 - Health endpoints: `GET /api/health` (backend) and `/healthz` (frontend).
 - Root `README.md` with one-command bring-up instructions.
 
-**Done when**: `docker compose up` shows healthy frontend at `localhost:3000`, backend at `localhost:4000/api/health` returns `200`, and Postgres + Redis are reachable from the backend container.
+**Done when**: `docker compose up` shows healthy frontend at `localhost:3002`, backend at `localhost:4000/api/health` returns `200`, and Postgres + Redis are reachable from the backend container.
 
 ---
 
