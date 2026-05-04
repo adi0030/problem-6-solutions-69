@@ -70,6 +70,7 @@ const UpdateMeSchema = z.object({
   displayName: z.string().min(1).max(40).optional(),
   handle: z.string().min(3).max(20).optional(),
   bio: z.string().max(160).nullable().optional(),
+  setupComplete: z.boolean().optional(),
 });
 
 router.patch('/me', requireAuth, async (req, res) => {
@@ -107,6 +108,24 @@ router.delete('/me/avatar', requireAuth, async (req, res) => {
   res.json({ user });
 });
 
+// Suggested users
+router.get('/suggested', optionalAuth, async (req, res) => {
+  // Simple implementation: fetch random recently active users.
+  const users = await prisma.user.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      handle: true,
+      displayName: true,
+      profilePicture: true,
+    },
+    where: req.user ? { id: { not: req.user.id } } : undefined,
+  });
+  
+  res.json({ users });
+});
+
 // Public profile by handle. counts: followers & following are reserved for a
 // future phase, for now we return post + share counts.
 router.get('/:handle', optionalAuth, async (req, res) => {
@@ -127,6 +146,7 @@ router.get('/:handle', optionalAuth, async (req, res) => {
 
   res.json({ user: { ...user, postCount } });
 });
+
 
 // Share a profile — server records the event; client copies the URL.
 router.post('/:handle/share', requireAuth, async (req, res) => {

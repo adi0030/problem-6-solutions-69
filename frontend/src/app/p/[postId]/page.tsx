@@ -151,7 +151,7 @@ export default function PostDetailPage() {
 
   return (
     <div className="space-y-6">
-      <PostCard post={post} onChange={setPost} />
+      <PostCard post={post} onChange={setPost} onDelete={() => window.location.href = '/feed'} />
 
       <div className="space-y-6 rounded-3xl border border-slate-200/60 bg-white p-6 shadow-soft dark:border-slate-800/60 dark:bg-slate-900/50">
         <div className="flex gap-3">

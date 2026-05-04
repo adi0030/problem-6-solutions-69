@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-noise">
       {/* Soft gradient background elements */}
       <div className="absolute top-1/4 left-1/4 -z-10 h-96 w-96 rounded-full bg-rose-200/50 mix-blend-multiply blur-3xl dark:bg-rose-900/20 dark:mix-blend-lighten" />
       <div className="absolute top-1/3 right-1/4 -z-10 h-96 w-96 rounded-full bg-amber-200/50 mix-blend-multiply blur-3xl dark:bg-amber-900/20 dark:mix-blend-lighten" />
