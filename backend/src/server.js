@@ -8,6 +8,7 @@ import fs from 'fs';
 import rateLimit from 'express-rate-limit';
 import { RedisStore } from 'rate-limit-redis';
 
+import { prisma } from './db.js';
 import { redis } from './redis.js';
 import { attachChat } from './chat.js';
 
@@ -35,6 +36,41 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 // Static uploads served by Express in dev. In prod, Nginx serves them directly.
 app.use('/uploads', express.static(UPLOADS_ROOT, { maxAge: '7d' }));
 
+// Liveness should stay independent from Redis-backed rate limiting.
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'backend',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/healthz', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      service: 'backend',
+      checks: {
+        database: 'ok',
+      },
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[healthz] database check failed', error);
+    res.status(503).json({
+      status: 'error',
+      service: 'backend',
+      checks: {
+        database: 'error',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Global rate limit: 300 req / minute / IP. Tight per-route limits below.
 const globalLimiter = rateLimit({
   windowMs: 60_000,
@@ -53,15 +89,6 @@ const writeLimiter = rateLimit({
 app.use('/api/posts', (req, res, next) =>
   req.method === 'GET' ? next() : writeLimiter(req, res, next),
 );
-
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'backend',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
-});
 
 app.use('/api/users', usersRouter);
 app.use('/api/posts', postsRouter);

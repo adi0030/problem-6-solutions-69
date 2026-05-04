@@ -38,6 +38,6 @@ RUN npx prisma generate && mkdir -p /app/uploads && chown -R app:app /app/upload
 USER app
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- http://localhost:4000/api/health || exit 1
+  CMD wget -qO- http://localhost:4000/api/healthz || exit 1
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["sh", "-c", "npx prisma migrate deploy && node src/server.js"]
