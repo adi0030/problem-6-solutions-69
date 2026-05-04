@@ -27,7 +27,7 @@ Edit `.env.production` and set, at minimum:
 POSTGRES_USER=social
 POSTGRES_PASSWORD=<long random>
 POSTGRES_DB=social
-DATABASE_URL=postgresql://social:<long random>@postgres:5432/social
+DATABASE_URL=postgresql://social:<long random>@postgres:5436/social
 REDIS_URL=redis://redis:6379
 
 FRONTEND_URL=https://YOUR_DOMAIN
