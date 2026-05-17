@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://backend:4000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
 const INTERNAL_API_TOKEN = process.env.INTERNAL_API_TOKEN || '';
 
 export const authOptions: NextAuthOptions = {
