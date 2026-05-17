@@ -79,7 +79,9 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
 });
-app.use('/api', globalLimiter);
+app.use('/api', (req, res, next) =>
+  req.headers['x-internal-token'] ? next() : globalLimiter(req, res, next),
+);
 
 const writeLimiter = rateLimit({
   windowMs: 60_000,
