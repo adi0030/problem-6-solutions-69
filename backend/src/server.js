@@ -6,10 +6,8 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
 
 import { prisma } from './db.js';
-import { redis } from './redis.js';
 import { attachChat } from './chat.js';
 
 import usersRouter from './routes/users.js';
@@ -77,7 +75,6 @@ const globalLimiter = rateLimit({
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
-  store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
 });
 app.use('/api', (req, res, next) =>
   req.headers['x-internal-token'] ? next() : globalLimiter(req, res, next),
@@ -86,7 +83,6 @@ app.use('/api', (req, res, next) =>
 const writeLimiter = rateLimit({
   windowMs: 60_000,
   max: 60,
-  store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
 });
 app.use('/api/posts', (req, res, next) =>
   req.method === 'GET' ? next() : writeLimiter(req, res, next),
