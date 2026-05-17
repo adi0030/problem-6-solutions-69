@@ -39,7 +39,10 @@ services:
     env_file: .env.prod
     environment:
       NODE_ENV: production
+      PORT: 4000
       REDIS_URL: redis://redis:6380
+    ports:
+      - "127.0.0.1:4000:4000"
     volumes:
       - uploads:/app/uploads
     depends_on:
@@ -56,6 +59,9 @@ services:
     env_file: .env.prod
     environment:
       NODE_ENV: production
+      PORT: 3002
+    ports:
+      - "127.0.0.1:3002:3002"
     depends_on:
       - backend
 
