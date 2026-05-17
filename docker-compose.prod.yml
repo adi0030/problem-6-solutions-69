@@ -24,7 +24,7 @@ services:
       context: ./backend
       target: prod
     restart: always
-    env_file: .env.production
+    env_file: .env.prod
     environment:
       NODE_ENV: production
       REDIS_URL: redis://localhost:6379
@@ -39,7 +39,7 @@ services:
       context: ./frontend
       target: prod
     restart: always
-    env_file: .env.production
+    env_file: .env.prod
     environment:
       NODE_ENV: production
     depends_on:
