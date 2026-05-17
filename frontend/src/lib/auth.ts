@@ -14,6 +14,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {
+        // Fall through to the safe default below.
+      }
+      return `${baseUrl}/feed`;
+    },
     async signIn({ profile }) {
       if (!profile?.email) {
         console.error('[auth.signIn] profile.email missing');
