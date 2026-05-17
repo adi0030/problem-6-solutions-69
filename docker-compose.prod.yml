@@ -33,8 +33,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
 
   frontend:
     build:
@@ -64,5 +62,4 @@ services:
 
 volumes:
   pg_data:
-  redis_data:
   uploads:
