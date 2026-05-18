@@ -6,9 +6,8 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
 
-import { redis } from './redis.js';
+import { prisma } from './db.js';
 import { attachChat } from './chat.js';
 
 import usersRouter from './routes/users.js';
@@ -35,25 +34,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 // Static uploads served by Express in dev. In prod, Nginx serves them directly.
 app.use('/uploads', express.static(UPLOADS_ROOT, { maxAge: '7d' }));
 
-// Global rate limit: 300 req / minute / IP. Tight per-route limits below.
-const globalLimiter = rateLimit({
-  windowMs: 60_000,
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
-  store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
-});
-app.use('/api', globalLimiter);
-
-const writeLimiter = rateLimit({
-  windowMs: 60_000,
-  max: 60,
-  store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
-});
-app.use('/api/posts', (req, res, next) =>
-  req.method === 'GET' ? next() : writeLimiter(req, res, next),
-);
-
+// Liveness should stay independent from Redis-backed rate limiting.
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -62,6 +43,50 @@ app.get('/api/health', (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.get('/api/healthz', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      service: 'backend',
+      checks: {
+        database: 'ok',
+      },
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[healthz] database check failed', error);
+    res.status(503).json({
+      status: 'error',
+      service: 'backend',
+      checks: {
+        database: 'error',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Global rate limit: 300 req / minute / IP. Tight per-route limits below.
+const globalLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', (req, res, next) =>
+  req.headers['x-internal-token'] ? next() : globalLimiter(req, res, next),
+);
+
+const writeLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 60,
+});
+app.use('/api/posts', (req, res, next) =>
+  req.method === 'GET' ? next() : writeLimiter(req, res, next),
+);
 
 app.use('/api/users', usersRouter);
 app.use('/api/posts', postsRouter);

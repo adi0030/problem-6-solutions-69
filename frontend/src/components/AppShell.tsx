@@ -81,6 +81,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const pathname = usePathname() || "/";
   const isAuthPage = pathname === "/login" || pathname === "/";
+  const [authPending, setAuthPending] = useState(false);
+
+  async function startGoogleSignIn() {
+    if (authPending) return;
+    setAuthPending(true);
+    try {
+      await signIn('google', { callbackUrl: '/feed' });
+    } catch {
+      setAuthPending(false);
+    }
+  }
 
   const { data: meData } = useApi<{ user: any }>(
     status === "authenticated" ? "/api/users/me" : null,
@@ -305,10 +316,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   type="button"
-                  onClick={() => signIn("google")}
+                  onClick={startGoogleSignIn}
+                  disabled={authPending}
                   className="rounded-xl bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
                 >
-                  Sign in
+                  {authPending ? 'Signing in...' : 'Sign in'}
                 </motion.button>
               )}
             </div>

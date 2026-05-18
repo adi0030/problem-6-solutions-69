@@ -4,6 +4,8 @@ import { signIn } from 'next-auth/react';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-noise">
       {/* Soft gradient background elements */}

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 export default function HomePage() {
   const { status } = useSession();
   const router = useRouter();
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (status === 'authenticated') router.replace('/feed');

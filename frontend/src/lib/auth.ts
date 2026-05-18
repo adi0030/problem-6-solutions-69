@@ -1,8 +1,26 @@
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://backend:4000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
 const INTERNAL_API_TOKEN = process.env.INTERNAL_API_TOKEN || '';
+
+async function syncUser(profile: { email?: string | null; name?: string | null; sub?: string }) {
+  const url = `${BACKEND_URL}/api/users/sync`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-internal-token': INTERNAL_API_TOKEN,
+    },
+    body: JSON.stringify({
+      googleId: profile.sub || profile.email,
+      email: profile.email,
+      displayName: profile.name || profile.email?.split('@')[0],
+    }),
+    signal: AbortSignal.timeout(8000),
+  });
+  return { url, r };
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,6 +32,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {
+        // Fall through to the safe default below.
+      }
+      return `${baseUrl}/feed`;
+    },
     async signIn({ profile }) {
       if (!profile?.email) {
         console.error('[auth.signIn] profile.email missing');
@@ -21,18 +48,7 @@ export const authOptions: NextAuthOptions = {
       }
       const url = `${BACKEND_URL}/api/users/sync`;
       try {
-        const r = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-internal-token': INTERNAL_API_TOKEN,
-          },
-          body: JSON.stringify({
-            googleId: (profile as any).sub || profile.email,
-            email: profile.email,
-            displayName: profile.name || profile.email.split('@')[0],
-          }),
-        });
+        const { url, r } = await syncUser(profile as any);
         if (!r.ok) {
           const txt = await r.text().catch(() => '');
           console.error(`[auth.signIn] backend sync ${r.status} from ${url}: ${txt}`);
@@ -48,21 +64,7 @@ export const authOptions: NextAuthOptions = {
       // On first sign-in, fetch the canonical user record so the JWT carries our id.
       if (profile?.email && !token.userId) {
         try {
-          const r = await fetch(
-            `${BACKEND_URL}/api/users/sync`,
-            {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-                'x-internal-token': INTERNAL_API_TOKEN,
-              },
-              body: JSON.stringify({
-                googleId: (profile as any).sub || profile.email,
-                email: profile.email,
-                displayName: profile.name || profile.email.split('@')[0],
-              }),
-            },
-          );
+          const { r } = await syncUser(profile as any);
           if (r.ok) {
             const { user } = await r.json();
             token.userId = user.id;

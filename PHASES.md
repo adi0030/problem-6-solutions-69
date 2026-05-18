@@ -186,9 +186,9 @@ The default is chosen deterministically by `hash(userId) % 12` so the same user 
   - Frontend and backend run as non-root users
   - Postgres with backups (nightly `pg_dump` to a bind-mounted host directory)
   - Resource limits (`mem_limit`, `cpus`) per service
-- Deploy doc in `DEPLOY.md`: provision a VM, set DNS, write `.env.production`, `docker compose -f docker-compose.prod.yml up -d`.
+- Deploy doc in `DEPLOY.md`: provision a VM, set DNS, write `.env.prod`, `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d`.
 
-**Done when**: a freshly cloned repo on a clean VM, given a domain and Google OAuth credentials, comes up with `docker compose -f docker-compose.prod.yml up -d`, serves over HTTPS, passes the Playwright E2E suite against the live URL, and survives a container restart with no data loss.
+**Done when**: a freshly cloned repo on a clean VM, given a domain and Google OAuth credentials, comes up with `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d`, serves over HTTPS, passes the Playwright E2E suite against the live URL, and survives a container restart with no data loss.
 
 ---
 

@@ -1,6 +1,6 @@
 # Deploy
 
-Production deployment uses `docker-compose.prod.yml` and an `.env.production`
+Production deployment uses `docker-compose.prod.yml` and an `.env.prod`
 file. Nginx terminates HTTP and proxies to the frontend / backend / static
 uploads. For HTTPS in real production, put Caddy or a Certbot sidecar in front
 (this skeleton only ships HTTP-on-80 to keep the example simple).
@@ -18,17 +18,17 @@ uploads. For HTTPS in real production, put Caddy or a Certbot sidecar in front
 ```bash
 git clone <this repo>
 cd problem-6-solutions-69
-cp .env.example .env.production
+cp .env.example .env.prod
 ```
 
-Edit `.env.production` and set, at minimum:
+Edit `.env.prod` and set, at minimum:
 
 ```
 POSTGRES_USER=social
 POSTGRES_PASSWORD=<long random>
 POSTGRES_DB=social
 DATABASE_URL=postgresql://social:<long random>@postgres:5436/social
-REDIS_URL=redis://redis:6379
+REDIS_URL=redis://redis:6380
 
 FRONTEND_URL=https://YOUR_DOMAIN
 BACKEND_URL=http://backend:4000
@@ -43,7 +43,7 @@ GOOGLE_CLIENT_SECRET=...
 ## Bring it up
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 ```
 
 The backend container runs `prisma migrate deploy` on start, so the schema is
@@ -77,7 +77,7 @@ Wire that into a host cron job and copy the dumps somewhere durable (S3, etc.).
 
 ```bash
 git pull
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 ```
 
 ## Health
