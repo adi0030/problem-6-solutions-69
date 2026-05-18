@@ -5,6 +5,7 @@ import { api, apiJson } from '@/lib/api';
 import { MessageSquare } from 'lucide-react';
 import Loader from './Loader';
 import { motion } from 'framer-motion';
+import { CommentRow, CommentT } from './CommentRow';
 
 export function InlineComments({ postId, onCommentAdded }: { postId: string, onCommentAdded: () => void }) {
   const [comments, setComments] = useState<CommentT[]>([]);

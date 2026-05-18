@@ -44,8 +44,13 @@ router.post('/sync', requireInternal, async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: 'invalid_body' });
 
   const { googleId, email, displayName } = parsed.data;
+  console.log(`[auth] Syncing user from Google: ${email}`);
+
   let user = await prisma.user.findUnique({ where: { googleId } });
-  if (user) return res.json({ user });
+  if (user) {
+    console.log(`[auth] User found: ${user.handle}`);
+    return res.json({ user });
+  }
 
   // Try to claim existing email row (in case user record exists without googleId)
   user = await prisma.user.findUnique({ where: { email } });
@@ -55,6 +60,7 @@ router.post('/sync', requireInternal, async (req, res) => {
   }
 
   const handle = await generateUniqueHandle(email.split('@')[0] || displayName);
+  console.log(`[auth] Creating new user: ${handle}`);
   user = await prisma.user.create({
     data: { googleId, email, displayName: displayName.slice(0, 40), handle },
   });
